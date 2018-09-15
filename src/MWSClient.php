@@ -7,6 +7,7 @@ use DateTimeZone;
 use MCS\MWSEndPoint;
 use League\Csv\Reader;
 use League\Csv\Writer;
+use League\Csv\Statement;
 use SplTempFileObject;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
@@ -1102,7 +1103,10 @@ class MWSClient{
                 $csv->setDelimiter("\t");
                 $headers = $csv->fetchOne();
                 $result = [];
-                foreach ($csv->setOffset(1)->fetchAll() as $row) {
+		$stmt = (new Statement())
+			->offset(1);
+		$records = $stmt->process($csv);
+                foreach ($records as $row) {
                     $result[] = array_combine($headers, $row);
                 }
             }
