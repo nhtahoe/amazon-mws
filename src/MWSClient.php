@@ -1053,7 +1053,7 @@ class MWSClient{
             'ReportType' => $report
         ];
 	    
-	if ($custom) $query['custom'] = true;
+	if ($custom) $query['ReportOptions'] = "custom=true";
 	    
         if (!is_null($StartDate)) {
             if (!is_a($StartDate, 'DateTime')) {
