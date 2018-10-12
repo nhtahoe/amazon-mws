@@ -7,7 +7,6 @@ use DateTimeZone;
 use MCS\MWSEndPoint;
 use League\Csv\Reader;
 use League\Csv\Writer;
-use League\Csv\Statement;
 use SplTempFileObject;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
@@ -1042,17 +1041,20 @@ class MWSClient{
     /**
      * Creates a report request and submits the request to Amazon MWS.
      * @param string $report (http://docs.developer.amazonservices.com/en_US/reports/Reports_ReportType.html)
+     * @param bool $custom
      * @param DateTime [$StartDate = null]
      * @param EndDate [$EndDate = null]
      * @return string ReportRequestId
      */
-    public function RequestReport($report, $StartDate = null, $EndDate = null)
+    public function RequestReport($report, bool $custom = false, $StartDate = null, $EndDate = null )
     {
         $query = [
             'MarketplaceIdList.Id.1' => $this->config['Marketplace_Id'],
             'ReportType' => $report
         ];
-
+	    
+	if ($custom) $query['custom'] = true;
+	    
         if (!is_null($StartDate)) {
             if (!is_a($StartDate, 'DateTime')) {
                 throw new Exception('StartDate should be a DateTime object');
@@ -1103,10 +1105,7 @@ class MWSClient{
                 $csv->setDelimiter("\t");
                 $headers = $csv->fetchOne();
                 $result = [];
-		$stmt = (new Statement())
-			->offset(1);
-		$records = $stmt->process($csv);
-                foreach ($records as $row) {
+                foreach ($csv->setOffset(1)->fetchAll() as $row) {
                     $result[] = array_combine($headers, $row);
                 }
             }
