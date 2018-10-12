@@ -4,6 +4,7 @@ namespace MCS;
 use DateTime;
 use Exception;
 use DateTimeZone;
+use League\Csv\Statement;
 use MCS\MWSEndPoint;
 use League\Csv\Reader;
 use League\Csv\Writer;
@@ -1105,7 +1106,9 @@ class MWSClient{
                 $csv->setDelimiter("\t");
                 $headers = $csv->fetchOne();
                 $result = [];
-                foreach ($csv->setOffset(1)->fetchAll() as $row) {
+                $stmt = (new Statement())
+                    ->offset(1);
+                foreach ($stmt->process($csv) as $row) {
                     $result[] = array_combine($headers, $row);
                 }
             }
