@@ -91,7 +91,7 @@ class MWSClient{
     public function validateCredentials()
     {
         try{
-            $this->ListOrderItems('validate');
+            $this->ListOrderItems(1);
         } catch(Exception $e) {
             if ($e->getMessage() == 'Invalid AmazonOrderId: validate') {
                 return true;
